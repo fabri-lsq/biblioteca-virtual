@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vinilos — Biblioteca Fabricio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0a0a0a;
+    --surface: #141414;
+    --border: #242424;
+    --accent: #e8d5b0;
+    --accent2: #c4a882;
+    --text: #e8e8e8;
+    --muted: #666;
+    --font-head: 'Bebas Neue', sans-serif;
+    --font-body: 'DM Sans', sans-serif;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed; inset: 0; pointer-events: none;
+    background:
+      radial-gradient(ellipse 50% 40% at 20% 0%, rgba(232,213,176,.04) 0%, transparent 60%),
+      radial-gradient(ellipse 40% 50% at 80% 100%, rgba(196,168,130,.03) 0%, transparent 60%);
+  }
+
+  /* NAV */
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(10,10,10,.9); backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 28px; display: flex; align-items: center; gap: 20px; height: 56px;
+  }
+  nav a.logo {
+    text-decoration: none; font-family: var(--font-head);
+    font-size: 1.4rem; letter-spacing: .06em; color: var(--text);
+  }
+  nav a.logo span { color: var(--accent); }
+  .nav-links { display: flex; gap: 4px; margin-left: auto; }
+  .nav-links a {
+    text-decoration: none; color: var(--muted); font-size: .82rem;
+    font-weight: 500; padding: 6px 14px; border-radius: 6px; transition: all .2s;
+  }
+  .nav-links a:hover { color: var(--text); background: var(--border); }
+  .nav-links a.active { color: var(--accent); background: var(--border); }
+  .nav-text { }
+  @media (max-width: 600px) { .nav-text { display: none; } }
+
+  /* HEADER */
+  header {
+    position: relative; z-index: 1;
+    padding: 48px 32px 24px;
+    display: flex; align-items: flex-end; justify-content: space-between;
+    flex-wrap: wrap; gap: 20px;
+  }
+  header h1 {
+    font-family: var(--font-head);
+    font-size: clamp(2.8rem, 6vw, 5rem);
+    letter-spacing: .06em; line-height: 1;
+  }
+  header h1 span { color: var(--accent); }
+  #stats-bar { display: flex; gap: 24px; font-size: .78rem; color: var(--muted); font-weight: 300; }
+  .stat { display: flex; flex-direction: column; align-items: flex-end; }
+  .stat strong { font-size: 2.3rem; font-family: var(--font-head); color: var(--text); letter-spacing: .04em; }
+
+  /* CONTROLES */
+  .controls {
+    position: relative; z-index: 1;
+    padding: 0 32px 28px;
+    display: flex; flex-wrap: wrap; gap: 12px; align-items: center;
+  }
+  .search-wrap { position: relative; flex: 1; min-width: 200px; max-width: 360px; }
+  .search-wrap svg { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; opacity: .35; }
+  #buscador {
+    width: 100%; background: var(--surface); border: 1px solid var(--border);
+    border-radius: 100px; padding: 9px 14px 9px 38px;
+    color: var(--text); font-family: var(--font-body); font-size: .88rem;
+    outline: none; transition: border-color .2s;
+  }
+  #buscador:focus { border-color: var(--accent); }
+  #buscador::placeholder { color: var(--muted); }
+  .filter-group { display: flex; gap: 6px; flex-wrap: wrap; }
+  .chip {
+    background: var(--surface); border: 1px solid var(--border);
+    color: var(--muted); font-family: var(--font-body); font-size: .78rem;
+    font-weight: 500; padding: 7px 16px; border-radius: 100px;
+    cursor: pointer; transition: all .2s; white-space: nowrap;
+  }
+  .chip:hover { border-color: var(--accent); color: var(--text); }
+  .chip.active { background: var(--accent); border-color: var(--accent); color: #000; }
+
+  /* GALERÍA */
+  #gallery {
+    position: relative; z-index: 1;
+    padding: 0 32px 60px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 24px;
+  }
+
+  /* CARD */
+  .vinyl-card {
+    position: relative; cursor: pointer;
+    border-radius: 6px; overflow: hidden;
+    transition: transform .3s ease;
+    background: var(--surface);
+    aspect-ratio: 1;
+  }
+  .vinyl-card:hover { transform: scale(1.04); z-index: 10; }
+
+  .vinyl-card img {
+    width: 100%; height: 100%;
+    object-fit: cover; display: block;
+    transition: filter .3s;
+  }
+
+  .vinyl-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(transparent 40%, rgba(0,0,0,.85) 100%);
+    opacity: 0; transition: opacity .3s;
+    display: flex; flex-direction: column; justify-content: flex-end;
+    padding: 14px;
+  }
+  .vinyl-card:hover .vinyl-overlay { opacity: 1; }
+
+  .vinyl-play {
+    position: absolute; top: 50%; left: 50%;
+    transform: translate(-50%, -50%) scale(0.8);
+    width: 44px; height: 44px;
+    background: var(--accent); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; transition: all .25s;
+  }
+  .vinyl-card:hover .vinyl-play { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  .vinyl-play svg { width: 18px; height: 18px; fill: #000; margin-left: 2px; }
+
+  .vinyl-meta { position: relative; z-index: 1; }
+  .vinyl-album { font-size: .82rem; font-weight: 500; color: #fff; line-height: 1.2; }
+  .vinyl-artist { font-size: .72rem; color: rgba(255,255,255,.6); margin-top: 3px; }
+
+  .no-cover {
+    width: 100%; height: 100%;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 10px;
+  }
+  .no-cover .disc {
+    width: 70%; aspect-ratio: 1;
+    border-radius: 50%;
+    background: repeating-radial-gradient(circle,
+      #1a1a1a 0px, #1a1a1a 2px,
+      #222 2px, #222 4px,
+      #1a1a1a 4px, #1a1a1a 6px
+    );
+    border: 1px solid #333;
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+  }
+  .no-cover .disc::after {
+    content: '';
+    width: 18%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: var(--surface);
+    border: 1px solid #444;
+  }
+  .no-cover .disc-label {
+    position: absolute;
+    font-size: 8px; color: rgba(255,255,255,.4);
+    text-align: center; line-height: 1.3;
+    max-width: 60%; pointer-events: none;
+    z-index: 1;
+  }
+  .card-info {
+    padding: 10px 4px 0;
+  }
+  .card-album { font-size: .82rem; font-weight: 500; color: var(--text); line-height: 1.2; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .card-artist { font-size: .72rem; color: var(--muted); margin-top: 3px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+  /* SKELETON */
+  .skeleton {
+    background: var(--surface); border-radius: 6px;
+    aspect-ratio: 1; animation: pulse 1.5s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:.5} 50%{opacity:1} }
+
+  /* MODAL */
+  #modal {
+    display: none; position: fixed; inset: 0; z-index: 200;
+    background: rgba(0,0,0,.82); backdrop-filter: blur(8px);
+    align-items: center; justify-content: center; padding: 20px;
+  }
+  #modal.open { display: flex; }
+  .modal-box {
+    background: #111; border: 1px solid var(--border);
+    border-radius: 16px; max-width: 580px; width: 100%;
+    max-height: 90vh; overflow-y: auto;
+    position: relative; animation: modalIn .25s ease;
+  }
+  @keyframes modalIn { from{opacity:0;transform:scale(.96) translateY(10px)} to{opacity:1;transform:scale(1) translateY(0)} }
+
+  .modal-top {
+    display: flex; gap: 0;
+    border-radius: 16px 16px 0 0; overflow: hidden;
+  }
+  .modal-cover {
+    width: 200px; flex-shrink: 0; aspect-ratio: 1;
+    background: var(--surface);
+  }
+  .modal-cover img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .modal-cover-placeholder {
+    width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    background: #1a1a1a;
+  }
+
+  .modal-header-info {
+    flex: 1; padding: 24px 20px;
+    background: linear-gradient(135deg, #161616, #111);
+    display: flex; flex-direction: column; justify-content: flex-end; gap: 8px;
+  }
+  .modal-album {
+    font-family: var(--font-head); font-size: 1.8rem;
+    letter-spacing: .06em; line-height: 1; color: var(--text);
+  }
+  .modal-artist { font-size: .9rem; color: var(--muted); font-weight: 300; }
+  .modal-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 4px; }
+  .mtag {
+    font-size: .7rem; padding: 3px 10px; border-radius: 100px;
+    background: rgba(232,213,176,.08); border: 1px solid rgba(232,213,176,.15);
+    color: var(--accent2);
+  }
+
+  .modal-body { padding: 20px 24px 28px; display: flex; gap: 24px; }
+  .tracklist { flex: 1; }
+  .tracklist h3 {
+    font-size: .68rem; text-transform: uppercase; letter-spacing: .14em;
+    color: var(--muted); margin-bottom: 12px;
+  }
+  .tracklist ol { list-style: none; counter-reset: track; }
+  .tracklist ol li {
+    counter-increment: track;
+    display: flex; align-items: center; gap: 10px;
+    padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,.04);
+    font-size: .82rem; color: rgba(232,232,232,.75);
+  }
+  .tracklist ol li::before {
+    content: counter(track);
+    justify-content: space-between;
+    width: 20px; text-align: right;
+    font-size: .72rem; color: var(--muted); flex-shrink: 0;
+  }
+  .tracklist ol li:last-child { border-bottom: none; }
+  .side-label {
+    font-size: .62rem; text-transform: uppercase; letter-spacing: .12em;
+    color: var(--accent); padding: 10px 0 4px; font-weight: 500;
+  }
+
+  .modal-close {
+    position: absolute; top: 14px; right: 14px;
+    background: rgba(0,0,0,.5); border: 1px solid var(--border);
+    color: var(--muted); width: 30px; height: 30px;
+    border-radius: 50%; cursor: pointer; font-size: .9rem;
+    display: flex; align-items: center; justify-content: center;
+    transition: all .2s; z-index: 10;
+  }
+  .modal-close:hover { color: var(--text); border-color: var(--text); }
+
+  /* EMPTY */
+  #empty { grid-column: 1/-1; padding: 80px 0; text-align: center; color: var(--muted); display: none; }
+
+  @media (max-width: 600px) {
+    header { padding: 28px 16px 16px; }
+    .controls { padding: 0 16px 20px; }
+    #gallery { padding: 0 16px 40px; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+    .modal-top { flex-direction: column; }
+    .modal-cover { width: 100%; aspect-ratio: 1; }
+    .modal-body { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="logo" href="/index.html">fabri<span>lib</span></a>
+  <div class="nav-links">
+    <a href="/WebManga/index.html">Mangas</a>
+    <a href="/WebJuegos/index.html">Juegos</a>
+    <a href="/WebLibros/index.html">Libros</a>
+    <a href="/WebVinilos/index.html" class="active">Vinilos</a>
+  </div>
+</nav>
+
+<header>
+  <div>
+    <h1>VINI<span>LOS</span></h1>
+    <p style="color:var(--muted);font-size:.85rem;margin-top:4px">Tu colección de discos</p>
+  </div>
+  <div id="stats-bar">
+    <div class="stat"><strong id="stat-total">—</strong>Discos</div>
+    <div class="stat"><strong id="stat-artistas">—</strong>Artistas</div>
+  </div>
+</header>
+
+<div class="controls">
+  <div class="search-wrap">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <input type="text" id="buscador" placeholder="Buscar álbum o artista..." oninput="filtrar()">
+  </div>
+  <div class="filter-group" id="filtros-genero">
+    <button class="chip active" data-genero="" onclick="setGenero(this)">Todos</button>
+  </div>
+  <div class="filter-group">
+    <button class="chip active" data-orden="album" onclick="setOrden(this)">A→Z</button>
+    <button class="chip" data-orden="artista" onclick="setOrden(this)">Artista</button>
+    <button class="chip" data-orden="anio" onclick="setOrden(this)">Año</button>
+  </div>
+</div>
+
+<div id="gallery">
+  <!-- skeletons -->
+  <div class="skeleton"></div><div class="skeleton"></div>
+  <div class="skeleton"></div><div class="skeleton"></div>
+  <div class="skeleton"></div><div class="skeleton"></div>
+  <div id="empty"><p>No se encontraron vinilos</p></div>
+</div>
+
+<!-- MODAL -->
+<div id="modal" onclick="if(event.target===this)cerrar()">
+  <div class="modal-box">
+    <button class="modal-close" onclick="cerrar()">✕</button>
+    <div class="modal-top">
+      <div class="modal-cover"><img id="m-img" src="" alt=""></div>
+      <div class="modal-header-info">
+        <div class="modal-album" id="m-album"></div>
+        <div class="modal-artist" id="m-artist"></div>
+        <div class="modal-tags" id="m-tags"></div>
+      </div>
+    </div>
+    <div class="modal-body">
+      <div class="tracklist" id="m-tracklist"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── CONFIG ────────────────────────────────────────────────
+const API = location.hostname === 'localhost' || location.hostname === '127.0.0.1'
+  ? 'https://biblioteca-virtual-lsq.netlify.app/.netlify/functions/airtable'
+  : '/.netlify/functions/airtable';
+
+let todosLosVinilos = [];
+let filtroGenero    = '';
+let ordenActivo     = 'album';
+let busqueda        = '';
+
+// ── CARGA ─────────────────────────────────────────────────
+async function cargarVinilos() {
+  let records = [], offset = null;
+  try {
+    do {
+      let url = `${API}?table=Vinilos&pageSize=100&sortField=Album&sortDir=asc`;
+      if (offset) url += `&offset=${encodeURIComponent(offset)}`;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error(`Error ${res.status}`);
+      const data = await res.json();
+      records = records.concat(data.records);
+      offset = data.offset || null;
+    } while (offset);
+
+    todosLosVinilos = records.map(r => ({ id: r.id, ...r.fields }));
+    construirFiltrosGenero();
+    renderizar();
+    actualizarStats();
+  } catch(e) {
+    document.getElementById('gallery').innerHTML =
+      `<div style="grid-column:1/-1;padding:60px;text-align:center;color:#f87171">Error: ${e.message}</div>`;
+  }
+}
+
+// ── FILTROS DE GÉNERO DINÁMICOS ───────────────────────────
+function construirFiltrosGenero() {
+  const generos = [...new Set(todosLosVinilos.map(v => v.Genero).filter(Boolean))].sort();
+  const wrap = document.getElementById('filtros-genero');
+  generos.forEach(g => {
+    const btn = document.createElement('button');
+    btn.className = 'chip';
+    btn.dataset.genero = g;
+    btn.textContent = g;
+    btn.onclick = () => setGenero(btn);
+    wrap.appendChild(btn);
+  });
+}
+
+// ── RENDER ────────────────────────────────────────────────
+function renderizar() {
+  const gallery = document.getElementById('gallery');
+
+  let lista = todosLosVinilos.filter(v => {
+    const q = busqueda.toLowerCase();
+    if (q && !(v.Album||'').toLowerCase().includes(q) && !(v.Artista||'').toLowerCase().includes(q)) return false;
+    if (filtroGenero && v.Genero !== filtroGenero) return false;
+    return true;
+  });
+
+  lista.sort((a, b) => {
+    if (ordenActivo === 'album')   return (a.Album||'').localeCompare(b.Album||'');
+    if (ordenActivo === 'artista') return (a.Artista||'').localeCompare(b.Artista||'');
+    if (ordenActivo === 'anio')    return (a.Anio||0) - (b.Anio||0);
+    return 0;
+  });
+
+  gallery.innerHTML = '';
+
+  const empty = document.getElementById('empty') || document.createElement('div');
+  empty.id = 'empty';
+  empty.style.display = lista.length === 0 ? 'block' : 'none';
+  empty.style.cssText = 'grid-column:1/-1;padding:80px 0;text-align:center;color:var(--muted)';
+  empty.innerHTML = '<p>No se encontraron vinilos</p>';
+  gallery.appendChild(empty);
+  if (!lista.length) return;
+
+  lista.forEach(v => {
+    const card = crearCard(v);
+    gallery.appendChild(card);
+  });
+}
+
+function crearCard(v) {
+  const card = document.createElement('div');
+  card.className = 'vinyl-card';
+  card.onclick = () => abrirModal(v);
+
+  if (v.CoverURL) {
+    card.innerHTML = `
+      <img src="${v.CoverURL}" alt="${v.Album}" loading="lazy" onerror="this.parentElement.classList.add('no-img')">
+      <div class="vinyl-overlay">
+        <div class="vinyl-play">
+          <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+        </div>
+        <div class="vinyl-meta">
+          <div class="vinyl-album">${v.Album||''}</div>
+          <div class="vinyl-artist">${v.Artista||''}</div>
+        </div>
+      </div>
+    `;
+  } else {
+    card.innerHTML = `
+      <div class="no-cover">
+        <div class="disc">
+          <div class="disc-label">${v.Album||''}</div>
+        </div>
+      </div>
+      <div class="vinyl-overlay">
+        <div class="vinyl-play">
+          <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+        </div>
+        <div class="vinyl-meta">
+          <div class="vinyl-album">${v.Album||''}</div>
+          <div class="vinyl-artist">${v.Artista||''}</div>
+        </div>
+      </div>
+    `;
+  }
+
+  // Info debajo de la card
+  const info = document.createElement('div');
+  info.className = 'card-info';
+  info.innerHTML = `
+    <div class="card-album">${v.Album||''}</div>
+    <div class="card-artist">${v.Artista||''} ${v.Anio ? '· '+v.Anio : ''}</div>
+  `;
+  card.appendChild(info);
+  return card;
+}
+
+// ── MODAL ─────────────────────────────────────────────────
+function abrirModal(v) {
+  document.getElementById('m-album').textContent  = v.Album   || '';
+  document.getElementById('m-artist').textContent = v.Artista || '';
+
+  const img = document.getElementById('m-img');
+  img.src = v.CoverURL || '';
+  img.style.display = v.CoverURL ? 'block' : 'none';
+
+  // Tags
+  const tags = document.getElementById('m-tags');
+  tags.innerHTML = '';
+  if (v.Genero) tags.innerHTML += `<span class="mtag">${v.Genero}</span>`;
+  if (v.Anio)   tags.innerHTML += `<span class="mtag">${v.Anio}</span>`;
+
+  // Tracklist
+  const tl = document.getElementById('m-tracklist');
+  tl.innerHTML = '';
+
+  function parsearLado(texto, lado) {
+    if (!texto || !texto.trim()) return null;
+    const wrap = document.createElement('div');
+    const label = document.createElement('div');
+    label.className = 'side-label';
+    label.textContent = lado;
+    wrap.appendChild(label);
+    const ol = document.createElement('ol');
+    texto.split('\n').filter(l => l.trim()).forEach(track => {
+  const li = document.createElement('li');
+  const limpio = track.replace(/^\d+[\.\-\)]\s*/, '').trim();
+  // Separar título y tiempo — busca patrón mm:ss o m:ss al final
+  const match = limpio.match(/^(.*?)\s{2,}(\d{1,2}:\d{2})$/) ||
+                limpio.match(/^(.*?)\t(\d{1,2}:\d{2})$/) ||
+                limpio.match(/^(.*?)\s+(\d{1,2}:\d{2})$/);
+  if (match) {
+      li.style.cssText = 'display:flex;justify-content:space-between;align-items:baseline;gap:12px;width:100%';
+      const titulo = document.createElement('span');
+      titulo.textContent = match[1].trim();
+      titulo.style.cssText = 'text-align:left;flex:1';
+      const tiempo = document.createElement('span');
+      tiempo.textContent = match[2];
+      tiempo.style.cssText = 'color:var(--muted);flex-shrink:0;font-variant-numeric:tabular-nums';
+      li.appendChild(titulo);
+      li.appendChild(tiempo);
+    } else {
+      li.textContent = limpio;
+    }
+    ol.appendChild(li);
+  });    wrap.appendChild(ol);
+    return wrap;
+  }
+
+  const esDoble = (v.LadoC && v.LadoC.trim()) || (v.LadoD && v.LadoD.trim());
+
+  if (esDoble) {
+    // Disco doble: grid 2 columnas
+    tl.style.cssText = 'display:grid;grid-template-columns:1fr 1fr;gap:0 24px;width:100%';
+    const a = parsearLado(v.LadoA, 'Lado A');
+    const b = parsearLado(v.LadoB, 'Lado B');
+    const c = parsearLado(v.LadoC, 'Lado C');
+    const d = parsearLado(v.LadoD, 'Lado D');
+    if (a) tl.appendChild(a);
+    if (c) tl.appendChild(c);
+    if (b) tl.appendChild(b);
+    if (d) tl.appendChild(d);
+  } else {
+    tl.style.cssText = '';
+    const a = parsearLado(v.LadoA, 'Lado A');
+    const b = parsearLado(v.LadoB, 'Lado B');
+    if (a) tl.appendChild(a);
+    if (b) tl.appendChild(b);
+    if (!a && !b) tl.innerHTML = '<p style="font-size:.82rem;color:var(--muted)">Sin tracklist cargada</p>';
+  }
+
+  document.getElementById('modal').classList.add('open');
+  document.addEventListener('keydown', escModal);
+}
+
+function cerrar() {
+  document.getElementById('modal').classList.remove('open');
+  document.removeEventListener('keydown', escModal);
+}
+function escModal(e) { if (e.key === 'Escape') cerrar(); }
+
+// ── FILTROS Y ORDEN ───────────────────────────────────────
+function setGenero(btn) {
+  document.querySelectorAll('[data-genero]').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  filtroGenero = btn.dataset.genero;
+  renderizar();
+}
+function setOrden(btn) {
+  document.querySelectorAll('[data-orden]').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  ordenActivo = btn.dataset.orden;
+  renderizar();
+}
+function filtrar() { busqueda = document.getElementById('buscador').value; renderizar(); }
+
+// ── STATS ─────────────────────────────────────────────────
+function actualizarStats() {
+  document.getElementById('stat-total').textContent    = todosLosVinilos.length;
+  document.getElementById('stat-artistas').textContent = new Set(todosLosVinilos.map(v => v.Artista).filter(Boolean)).size;
+}
+
+cargarVinilos();
+</script>
+</body>
+</html>

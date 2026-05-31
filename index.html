@@ -3,168 +3,126 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Fabrilib — Biblioteca Virtual</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<title>Biblioteca Fabricio</title>
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    .logo-icon {
-    width: 28px;
-    height: 28px;
-    object-fit: contain;
-  }
-
-  :root {
-    --bg: #0e0e12; --surface: #16161d; --border: #2a2a38;
-    --accent: #c084fc; --accent2: #818cf8;
-    --text: #e2e2f0; --muted: #6b6b8a;
-    --font-head: 'Bebas Neue', sans-serif;
-    --font-body: 'DM Sans', sans-serif;
-  }
-
-  body {
-    background: var(--bg); color: var(--text);
-    font-family: var(--font-body); min-height: 100vh;
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    padding: 40px 24px;
-    overflow: hidden;
-  }
-
-  body::before {
-    content: '';
-    position: fixed; inset: 0;
-    background:
-      radial-gradient(ellipse 70% 60% at 20% 20%, rgba(192,132,252,.08) 0%, transparent 60%),
-      radial-gradient(ellipse 50% 70% at 80% 80%, rgba(129,140,248,.06) 0%, transparent 60%);
-    pointer-events: none;
-  }
-
-  .hero {
-    text-align: center; margin-bottom: 56px; position: relative; z-index: 1;
-  }
-
-  .hero-logo {
-    font-family: var(--font-head);
-    font-size: clamp(3.5rem, 10vw, 5rem);
-    letter-spacing: .08em; line-height: 1;
-    color: var(--text);
-  }
-
-  .hero-logo span { color: var(--accent); }
-
-  .hero-sub {
-    color: var(--muted); font-size: .9rem; font-weight: 300;
-    margin-top: 10px; letter-spacing: .08em; text-transform: uppercase;
-  }
-
-  .cards {
-    display: flex; gap: 24px; flex-wrap: wrap; justify-content: center;
-    position: relative; z-index: 1;
-  }
-
-  .card {
-    text-decoration: none;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 40px 48px;
-    width: 260px;
-    display: flex; flex-direction: column; align-items: center; gap: 16px;
-    transition: transform .3s ease, border-color .3s ease, box-shadow .3s ease;
-    position: relative; overflow: hidden;
-  }
-
-  .card::before {
-    content: '';
-    position: absolute; inset: 0;
-    opacity: 0; transition: opacity .3s;
-  }
-
-  .card.manga::before  { background: radial-gradient(circle at 50% 0%, rgba(192,132,252,.15), transparent 70%); }
-  .card.juegos::before { background: radial-gradient(circle at 50% 0%, rgba(129,140,248,.15), transparent 70%); }
-
-  .card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 20px 60px rgba(0,0,0,.4);
-  }
-
-  .card.manga:hover  { border-color: var(--accent); }
-  .card.juegos:hover { border-color: var(--accent2); }
-  .card:hover::before { opacity: 1; }
-
-  .card-icon-mangas {
-    width: 3rem;
-    height: 3rem;
-    object-fit: contain;
-    filter: drop-shadow(0 0 20px rgba(192,132,252,.4));
-  }
-
-  .card-icon {
-    font-size: 3rem; line-height: 1;
-    filter: drop-shadow(0 0 20px rgba(192,132,252,.4));
-  }
-
-  .card-title {
-    font-family: var(--font-head);
-    font-size: 2rem; letter-spacing: .08em;
-    color: var(--text);
-  }
-
-  .card.manga  .card-title { color: var(--accent); }
-  .card.juegos .card-title { color: var(--accent2); }
-
-  .card-desc {
-    font-size: .8rem; color: var(--muted); text-align: center;
-    line-height: 1.5; font-weight: 300;
-  }
-
-  .card-arrow {
-    margin-top: 8px;
-    font-size: .75rem; color: var(--muted);
-    letter-spacing: .1em; text-transform: uppercase;
-    transition: color .2s;
-  }
-
-  .card.manga:hover  .card-arrow { color: var(--accent); }
-  .card.juegos:hover .card-arrow { color: var(--accent2); }
-
-  .footer {
-    position: fixed; bottom: 20px;
-    font-size: .72rem; color: var(--muted); letter-spacing: .05em;
-    z-index: 1;
-  }
-
-  @media (max-width: 500px) {
-    .card { width: 100%; max-width: 320px; padding: 32px 32px; }
-    body { overflow: auto; }
-  }
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;overflow:hidden}
+.wrapper{width:100%;height:100vh;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;position:relative}
+.panel{position:relative;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:filter 0.35s ease;text-decoration:none}
+.panel-vinyl{background:#1a1a2e}
+.panel-book {background:#1e2d1e}
+.panel-manga{background:#2d1e1e}
+.panel-game {background:#1e1e2d}
+.wrapper:has(.panel:hover) .panel{filter:brightness(0.2)}
+.wrapper:has(.panel:hover) .panel:hover{filter:brightness(1)}
+.icon-wrap{display:flex;flex-direction:column;align-items:center;gap:14px;transition:transform 0.35s ease}
+.panel:hover .icon-wrap{transform:scale(1.08)}
+.icon-svg{width:88px;height:88px;opacity:0.85}
+.label{font-family:system-ui,sans-serif;font-size:13px;letter-spacing:0.18em;text-transform:uppercase;color:rgba(255,255,255,0.45);font-weight:400;transition:color 0.35s}
+.panel:hover .label{color:rgba(255,255,255,0.9)}
+.divider-h{position:absolute;top:50%;left:0;width:100%;height:1px;background:rgba(255,255,255,0.07);z-index:5;pointer-events:none}
+.divider-v{position:absolute;top:0;left:50%;width:1px;height:100%;background:rgba(255,255,255,0.07);z-index:5;pointer-events:none}
+.center-title{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  z-index:20;pointer-events:none;text-align:center;
+}
+.center-title h1{
+  font-family:system-ui,sans-serif;
+  font-size:clamp(1.8rem,3.5vw,3rem);
+  font-weight:600;
+  color:rgba(255,255,255,0.95);
+  letter-spacing:0.14em;
+  text-transform:uppercase;
+  line-height:1.15;
+  text-shadow:0 2px 24px rgba(0,0,0,0.8),0 0 60px rgba(0,0,0,0.6);
+}
+.center-title p{
+  font-size:clamp(0.6rem,1vw,0.75rem);
+  color:rgba(255,255,255,0.3);
+  letter-spacing:0.25em;
+  text-transform:uppercase;
+  margin-top:8px;
+  text-shadow:0 1px 8px rgba(0,0,0,0.8);
+}
+@media(max-width:500px){
+  .icon-svg{width:60px;height:60px}
+  .label{font-size:11px}
+}
 </style>
 </head>
 <body>
 
-<div class="hero">
-  <div class="hero-logo"><span>Biblioteca</span><br>Fabri Lsq</div>
-  <p class="hero-sub">Biblioteca Virtual Personal</p>
-</div>
+<div class="wrapper">
+  <div class="divider-h"></div>
+  <div class="divider-v"></div>
 
-<div class="cards">
-  <a href="/WebManga/index.html" class="card manga">
-    <img src="Sol.png" class="card-icon-mangas">
-    <div class="card-title">MANGAS</div>
-    <p class="card-desc">Tu colección de mangas físicos,<br>progreso por serie y estado editorial.</p>
-    <div class="card-arrow">Explorar →</div>
+  <a class="panel panel-vinyl" href="/WebVinilos/index.html">
+    <div class="icon-wrap">
+      <svg class="icon-svg" viewBox="0 0 72 72" fill="none" aria-hidden="true">
+        <circle cx="36" cy="36" r="34" fill="#e8d5b0" opacity="0.08"/>
+        <circle cx="36" cy="36" r="34" stroke="#e8d5b0" stroke-width="1" opacity="0.3"/>
+        <circle cx="36" cy="36" r="28" stroke="#e8d5b0" stroke-width="0.5" opacity="0.2"/>
+        <circle cx="36" cy="36" r="22" stroke="#e8d5b0" stroke-width="0.5" opacity="0.2"/>
+        <circle cx="36" cy="36" r="16" stroke="#e8d5b0" stroke-width="0.5" opacity="0.2"/>
+        <circle cx="36" cy="36" r="10" stroke="#e8d5b0" stroke-width="0.5" opacity="0.2"/>
+        <circle cx="36" cy="36" r="4" fill="#e8d5b0" opacity="0.6"/>
+        <circle cx="36" cy="36" r="2" fill="#1a1a2e"/>
+        <path d="M36 4 A32 32 0 0 1 68 36" stroke="#e8d5b0" stroke-width="2.5" stroke-linecap="round" opacity="0.5"/>
+        <path d="M36 4 A32 32 0 0 0 4 36" stroke="#c4a882" stroke-width="2.5" stroke-linecap="round" opacity="0.3"/>
+      </svg>
+      <span class="label">Vinilos</span>
+    </div>
   </a>
 
-  <a href="/WebJuegos/index.html" class="card juegos">
-    <div class="card-icon">🎮</div>
-    <div class="card-title">JUEGOS</div>
-    <p class="card-desc">Biblioteca de juegos por plataforma,<br>horas jugadas y logros.</p>
-    <div class="card-arrow">Explorar →</div>
+  <a class="panel panel-book" href="/WebLibros/index.html">
+    <div class="icon-wrap">
+      <svg class="icon-svg" viewBox="0 0 72 72" fill="none" aria-hidden="true">
+        <rect x="14" y="12" width="34" height="52" rx="3" fill="#1e2d1e" stroke="#a8d5a2" stroke-width="0.8" opacity="0.3"/>
+        <rect x="16" y="14" width="30" height="48" rx="2" fill="#a8d5a2" opacity="0.08"/>
+        <line x1="22" y1="26" x2="40" y2="26" stroke="#a8d5a2" stroke-width="1" opacity="0.5"/>
+        <line x1="22" y1="32" x2="40" y2="32" stroke="#a8d5a2" stroke-width="1" opacity="0.3"/>
+        <line x1="22" y1="38" x2="36" y2="38" stroke="#a8d5a2" stroke-width="1" opacity="0.3"/>
+        <rect x="14" y="12" width="4" height="52" rx="2" fill="#a8d5a2" opacity="0.25"/>
+      </svg>
+      <span class="label">Libros</span>
+    </div>
   </a>
-</div>
 
-<p class="footer">fabri-lsq.github.io</p>
+  <a class="panel panel-manga" href="/WebManga/index.html">
+    <div class="icon-wrap">
+      <svg class="icon-svg" viewBox="0 0 72 72" fill="none" aria-hidden="true">
+        <rect x="10" y="8" width="22" height="56" rx="2" fill="#f4a0a0" opacity="0.1" stroke="#f4a0a0" stroke-width="0.8" opacity="0.35"/>
+        <rect x="18" y="10" width="22" height="56" rx="2" fill="#2d1e1e" stroke="#f4a0a0" stroke-width="0.8" opacity="0.3"/>
+        <rect x="26" y="12" width="22" height="56" rx="2" fill="#f4a0a0" opacity="0.08" stroke="#f4a0a0" stroke-width="1" opacity="0.4"/>
+        <rect x="26" y="12" width="4" height="56" rx="2" fill="#f4a0a0" opacity="0.2"/>
+        <line x1="33" y1="22" x2="44" y2="22" stroke="#f4a0a0" stroke-width="1" opacity="0.4"/>
+        <line x1="33" y1="28" x2="44" y2="28" stroke="#f4a0a0" stroke-width="1" opacity="0.25"/>
+        <line x1="33" y1="34" x2="42" y2="34" stroke="#f4a0a0" stroke-width="1" opacity="0.25"/>
+      </svg>
+      <span class="label">Mangas</span>
+    </div>
+  </a>
+
+  <a class="panel panel-game" href="/WebJuegos/index.html">
+    <div class="icon-wrap">
+      <svg class="icon-svg" viewBox="0 0 72 72" fill="none" aria-hidden="true">
+        <rect x="18" y="16" width="36" height="46" rx="4" fill="#a0b4f4" opacity="0.1" stroke="#a0b4f4" stroke-width="1" opacity="0.4"/>
+        <rect x="21" y="10" width="30" height="6" rx="2" fill="#a0b4f4" opacity="0.3"/>
+        <line x1="36" y1="28" x2="36" y2="40" stroke="#a0b4f4" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>
+        <line x1="30" y1="34" x2="42" y2="34" stroke="#a0b4f4" stroke-width="1.5" stroke-linecap="round" opacity="0.5"/>
+        <circle cx="46" cy="30" r="2" fill="#a0b4f4" opacity="0.6"/>
+        <circle cx="52" cy="36" r="2" fill="#a0b4f4" opacity="0.4"/>
+        <circle cx="46" cy="42" r="2" fill="#a0b4f4" opacity="0.4"/>
+      </svg>
+      <span class="label">Juegos</span>
+    </div>
+  </a>
+
+  <div class="center-title">
+    <h1>Biblioteca<br>Fabricio</h1>
+    <p>colección personal</p>
+  </div>
+</div>
 
 </body>
 </html>
